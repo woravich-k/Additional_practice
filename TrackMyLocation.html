@@ -1,0 +1,131 @@
+<html>
+<head>
+	<title>Leaflet and Javascript with GeoJSON Example</title>
+	<!--the following links add the CSS and Javascript required for the Leaflet Map -->
+	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.1.0/dist/leaflet.css" 
+	integrity ="sha512-
+wcw6ts8Anuw10Mzh9Ytw4pylW8+NAD4ch3lqm9lzAsTxg0GFeJgoAtxuCLREZSC5lUXdVyo/7yfsqFjQ4S+aKw=="
+	crossorigin=""/>
+	
+	<script src="https://unpkg.com/leaflet@1.1.0/dist/leaflet.js"
+	integrity = "sha512-
+mNqn2Wg7tSToJhvHcqfzLMU6J4mkOImSPTxVZAdo+lcPlk+GhZmYgACEe0x35K7YzW1zJ7XyJV/TT1MrdXvMcA=="
+	crossorigin="">
+		
+	</script>
+	
+	
+
+	<!--the following CSS is used to set the size of the Map -->
+	<style type="text/css">
+		#mapid {height: 180 px;}
+		
+		.button {
+			background-color: white;
+			border: none;
+			color: black;
+			padding: 15px 32px;
+			text-align: center;
+			text-decoration: none;
+			display: inline-block;
+			font-size: 100%;
+			width: 30%;
+			height: 10%;
+		}
+			
+			
+		/* for add button*/
+		.buttonBlue {
+			background-color: white; 
+			color: black; 
+			border: 2px solid #008CBA;
+		}
+
+		.buttonBlue:hover {
+			background-color: #008CBA;
+			color: white;
+		}
+		
+		/* for remove button*/
+		.buttonRed {
+			background-color: white; 
+			color: black; 
+			border: 2px solid #f44336;
+		}
+
+		.buttonRed:hover {
+			background-color: #f44336;
+			color: white;
+		}
+
+		
+	</style>
+	
+	<!--the following links incorporate the CSS required for custom icon creation-->
+	<link rel="stylesheet" href ="ionicons.min.css"/>
+	<link rel="stylesheet" href = "leaflet.awesome-markers.css"/>
+	<script src ="leaflet.awesome-markers.js"></script>
+	<script>
+		var currentLocationLyr;
+		var firstTime = true
+		var previousBound
+		function trackLocation() {
+			if (!firstTime){
+			// zoom to center
+				mymap.flyToBounds(currentLocationLyr.getLatLng().toBounds(500));
+				previousBound = mymap.getBounds()
+			} else {
+				if (navigator.geolocation) {
+					alert("Getting current location");
+					navigator.geolocation.watchPosition(showPosition);
+					
+					
+				} else {
+					alert("Geolocation is not supported by this browser.");
+				}
+			}
+		}
+		function showPosition(position) {
+			if(!firstTime){
+				mymap.removeLayer(currentLocationLyr);
+			}
+			
+			currentLocationLyr = L.marker([position.coords.latitude,position.coords.longitude]).addTo(mymap);
+			if(firstTime || previousBound.equals(mymap.getBounds())){
+				mymap.flyToBounds(currentLocationLyr.getLatLng().toBounds(500));
+				previousBound = mymap.getBounds()
+				firstTime = false;
+			}
+		}
+		
+		
+		
+	</script>
+	
+	
+</head>
+<body>
+	<!--the mapid div will hold the map-->
+	<div id = "mapid" style="width: 100%;height: 85%;"></div>
+	
+	<!-- the following script will load the map and set the default view and zoom, as well as loading the basemap tiles-->
+	<script>
+		//load the map
+		var mymap = L.map('mapid').setView([51.524559,-0.134040],13);
+		
+		//load the tiles
+		L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw',{
+			maxZoom: 18,
+			attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors,'+'<a href="http://creativecommons.org/licenses/by-sa/2.0/"> CC-BY-SA</a>,'+'imagery &copy; <a href="http://mapbox.com">Mapbox</a>', 
+			id: 'mapbox.streets'
+			}).addTo(mymap);
+			
+		
+	</script>
+		
+	<button id ="loadEarthquake" name="loadEarthquake" class ="button buttonBlue" onclick = "trackLocation()">Current Location</button>
+	
+	
+</br>This is web map with Leaflet
+</body>
+</html>
